@@ -2,7 +2,5 @@ services:
   - type: web
     name: course-api-minima
     env: python
-    buildCommand: |
-      pip install -r requirements.txt
-      playwright install
+    buildCommand: pip install -r requirements.txt && playwright install
     startCommand: uvicorn main:app --host 0.0.0.0 --port 10000
