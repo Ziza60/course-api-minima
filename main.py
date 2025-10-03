@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
+import os
 
 app = FastAPI()
 
@@ -9,7 +10,16 @@ def buscar_cursos(topico: str = "Python"):
 
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True, args=["--no-sandbox"])
+            # Adicionar mais argumentos para ambiente headless
+            browser = p.chromium.launch(
+                headless=True,
+                args=[
+                    "--no-sandbox",
+                    "--disable-setuid-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu"
+                ]
+            )
             page = browser.new_page()
 
             # 🔍 Udemy
@@ -45,7 +55,14 @@ def buscar_cursos(topico: str = "Python"):
 def health_check():
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True, args=["--no-sandbox"])
+            browser = p.chromium.launch(
+                headless=True,
+                args=[
+                    "--no-sandbox",
+                    "--disable-setuid-sandbox",
+                    "--disable-dev-shm-usage"
+                ]
+            )
             page = browser.new_page()
             page.goto("https://www.udemy.com", timeout=15000)
             title = page.title()
@@ -53,3 +70,7 @@ def health_check():
         return {"status": "ok", "title": title}
     except Exception as e:
         return {"status": "erro", "detalhe": str(e)}
+
+@app.get("/")
+def root():
+    return {"message": "API de busca de cursos está rodando!"}
