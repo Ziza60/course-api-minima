@@ -3,6 +3,8 @@ services:
     name: course-api-minima
     env: docker
     plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
 
 
 
